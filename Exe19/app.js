@@ -1,4 +1,4 @@
-const api_key = "39b753e746794d6f8efdbddb67fd89ea";
+const api_key = "";
 
 async function getRecipes(recipeArray) {
     console.log(recipeArray);
