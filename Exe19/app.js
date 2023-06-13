@@ -91,30 +91,31 @@ function getSeletcedIngredients() {
     return ingredients;
 }
 
-async function searchByNutrients(nutrient, value) {
+async function searchByNutrients(nutreintData) {
     return new Promise((resolve, reject) => {
         try {
-            fetch(`https://api.spoonacular.com/recipes/findByNutrients?apiKey=${api_key}&${nutrient}=${value}`)
+            fetch(`https://api.spoonacular.com/recipes/findByNutrients?apiKey=${api_key}&${nutreintData.option}=${nutreintData.value}`)
                 .then(res => res.json())
                 .then(data => {resolve(data)});
         } catch(err) {
-            reject("There was a problem by passing the list of ingredients");
+            reject("There was a problem by passing the nutrients");
         }
     });
 }
 
 function getNutrients() {
-    const ingredients = [];
+    const data = {};
 
-    const ingredientsSelector = document.querySelector(".ingridients-selector");
-    const selector = ingredientsSelector.querySelectorAll("input[type=checkbox]");
-    selector.forEach((element, index) => {
+    const nutreintSelector = document.querySelector(".nutreints-selector");
+    const selector = nutreintSelector.querySelectorAll("input[type=radio]");
+    selector.forEach((element) => {
         if(element.checked) {
-            ingredients.push(element.id + (index < selector.length ? "," : ""));
+            data.option = element.value;
+            data.value = nutreintSelector.querySelector("input[type=text]").value;
         }
     });
 
-    return ingredients;
+    return data;
 }
 
 async function searchByText(keyword) {
@@ -124,7 +125,7 @@ async function searchByText(keyword) {
                 .then(res => res.json())
                 .then(data => {resolve(data)});
         } catch(err) {
-            reject("There was a problem by passing the list of ingredients");
+            reject("There was a problem by passing the text");
         }
     });
 }
@@ -152,8 +153,8 @@ document.querySelector("#searchByIngredients").onclick = async () => {
 
 document.querySelector("#searchByNutrients").onclick = async () => {
     try {
-        const nutrients = getNutrients();
-        const recipeByNutrients = await searchByNutrients(nutrients);
+        const nutrientsData = getNutrients();
+        const recipeByNutrients = await searchByNutrients(nutrientsData);
         const recipes = await getRecipes(recipeByNutrients);
         setRecipe(recipes);
     } catch(err) {
@@ -170,4 +171,22 @@ document.querySelector("#searchByText").onclick = async () => {
     } catch(err) {
         console.log(err);
     }
+}
+
+const units = [
+    "g",
+    "g",
+    "kcal",
+    "g",
+    "mg",
+    "µg/mL"
+]
+
+document.querySelector(".nutreints-selector").onclick = () => {
+    const selector = document.querySelector(".nutreints-selector").querySelectorAll("input[type=radio]");
+    selector.forEach((element, index) => {
+        if(element.checked) {
+            document.querySelector(".text-custom").textContent = units[index];
+        }
+    });
 }
